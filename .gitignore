@@ -1,0 +1,15 @@
+.env
+data/raw/
+data/processed/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.DS_Store
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.log
+data/raw/flightaware_cache/

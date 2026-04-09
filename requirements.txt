@@ -1,0 +1,31 @@
+# Core Data
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Financial Data
+yfinance>=0.2.36
+
+# Network Analysis
+networkx>=3.0
+
+# Econometrics
+statsmodels>=0.14.0
+
+# Visualization & Dashboard
+streamlit>=1.32.0
+plotly>=5.18.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# HTTP / API
+requests>=2.31.0
+python-dotenv>=1.0.0
+
+# Utilities
+pyyaml>=6.0
+tqdm>=4.65.0
+colorama>=0.4.6
+
+# Testing
+pytest>=7.4.0

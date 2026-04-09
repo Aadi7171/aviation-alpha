@@ -1,0 +1,75 @@
+# Aviation Alpha Research Pipeline — Configuration
+
+# ─── Data Settings ────────────────────────────────────────────────────────────
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  # Years to include in historical analysis
+  start_year: 2018
+  end_year: 2024
+
+# ─── Airlines of Interest ─────────────────────────────────────────────────────
+airlines:
+  tickers:
+    UAL: "United Airlines"
+    DAL: "Delta Air Lines"
+    AAL: "American Airlines"
+    LUV: "Southwest Airlines"
+    ALK: "Alaska Airlines"
+    SAVE: "Spirit Airlines"
+    JBLU: "JetBlue Airways"
+    HA:   "Hawaiian Airlines"
+  bts_codes:
+    - "UA"
+    - "DL"
+    - "AA"
+    - "WN"
+    - "AS"
+    - "NK"
+    - "B6"
+    - "HA"
+
+# ─── Feature Engineering ──────────────────────────────────────────────────────
+features:
+  disruption:
+    zscore_window: 30        # rolling window in days
+    spike_threshold: 2.5     # |z| > this → disruption flag
+  route_overlap:
+    time_window_quarters: 4  # rolling quarters for temporal overlap
+  volatility:
+    realized_vol_window: 21  # trading days
+
+# ─── Granger Causality ────────────────────────────────────────────────────────
+granger:
+  max_lags: 8
+  significance_level: 0.05
+  ic: "aic"                  # information criterion for lag selection
+
+# ─── Backtesting ──────────────────────────────────────────────────────────────
+backtest:
+  initial_capital: 100000
+  signal_threshold: 0.65     # M&A pressure score threshold for long signal
+  holding_period_days: 30
+  benchmark_tickers: ["SPY", "XAL"]
+
+# ─── FlightAware AeroAPI ──────────────────────────────────────────────────────
+flightaware:
+  base_url: "https://aeroapi.flightaware.com/aeroapi"
+  major_airports:
+    - "KATL"  # Atlanta
+    - "KLAX"  # Los Angeles
+    - "KORD"  # Chicago O'Hare
+    - "KDFW"  # Dallas/Fort Worth
+    - "KDEN"  # Denver
+    - "KJFK"  # New York JFK
+    - "KSFO"  # San Francisco
+    - "KLAS"  # Las Vegas
+    - "KMIA"  # Miami
+    - "KIAH"  # Houston
+  cache_ttl_minutes: 60
+
+# ─── Dashboard ────────────────────────────────────────────────────────────────
+dashboard:
+  theme: "dark"
+  refresh_interval_seconds: 300
+  port: 8501
