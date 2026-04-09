@@ -120,7 +120,7 @@ def compute_vol_disruption_correlation(
     combined["rolling_corr"] = (
         combined["vol"].rolling(6).corr(combined["disruption"])
     )
-    return combined.reset_index()
+    return combined.reset_index().rename(columns={"index": "DATE"})
 
 
 if __name__ == "__main__":

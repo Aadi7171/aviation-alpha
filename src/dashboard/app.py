@@ -262,7 +262,13 @@ with tab1:
 
     with col_r:
         st.markdown('<div class="section-title">Vol / Disruption Rolling Correlation</div>', unsafe_allow_html=True)
-        corr_df = data["corr_df"].dropna(subset=["rolling_corr"])
+        corr_df = data["corr_df"].dropna(subset=["rolling_corr"]).copy()
+        # Ensure DATE is a column even if index
+        if "DATE" not in corr_df.columns and "DATE" == corr_df.index.name:
+            corr_df = corr_df.reset_index()
+        elif "DATE" not in corr_df.columns and "index" in corr_df.columns:
+            corr_df = corr_df.rename(columns={"index": "DATE"})
+
         fig_corr = px.line(
             corr_df, x="DATE", y="rolling_corr",
             color_discrete_sequence=["#a78bfa"],
