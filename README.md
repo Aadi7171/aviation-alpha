@@ -1,36 +1,96 @@
+![Aviation Alpha](https://capsule-render.vercel.app/api?type=waving&color=0:0f2942,100:185FA5&height=200&section=header&text=Aviation%20Alpha&fontSize=52&fontColor=ffffff&fontAlignY=38&desc=Alternative%20Data%20%7C%20Quant%20Research%20Pipeline&descAlignY=58&descSize=18)
+
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0f2942,100:185FA5&height=200&section=header&text=Aviation%20Alpha&fontSize=52&fontColor=ffffff&fontAlignY=38&desc=Alternative%20Data%20%7C%20Quant%20Research%20Pipeline&descAlignY=58&descSize=18" width="100%"/>
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-Visit%20Dashboard-185FA5?style=for-the-badge&logoColor=white)](https://aviation-alpha.streamlit.app)
+[![Live Website](https://img.shields.io/badge/🌐%20Live%20Website-aviation--alpha.vercel.app-0f2942?style=for-the-badge&logoColor=white)](https://aviation-alpha.vercel.app)
 
-**Aviation Alpha** is a production-grade quantitative research pipeline designed to extract alpha from aviation-based alternative data. It bridges the gap between raw aerospace activity and actionable market intelligence using econometric causality and network graph theory.
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io)
+[![statsmodels](https://img.shields.io/badge/Granger-Causality-00897B?style=for-the-badge)](https://www.statsmodels.org)
+[![NetworkX](https://img.shields.io/badge/NetworkX-Route%20Graphs-orange?style=for-the-badge)](https://networkx.org)
+[![FlightAware](https://img.shields.io/badge/FlightAware-AeroAPI%20v4-005DA8?style=for-the-badge)](https://www.flightaware.com/aeroapi/)
 
-![Analysis](https://img.shields.io/badge/Analyst-Aadi7171-blueviolet)
-![Backend](https://img.shields.io/badge/Backend-Python--Modular-3776AB)
-![Econometrics](https://img.shields.io/badge/Econometrics-Statsmodels-00897B)
-![Visuals](https://img.shields.io/badge/UI-Streamlit-FF4B4B)
+[![CI](https://img.shields.io/github/actions/workflow/status/Aadi7171/aviation-alpha/test.yml?label=Tests&style=flat-square)](https://github.com/Aadi7171/aviation-alpha/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![Last Commit](https://img.shields.io/github/last-commit/Aadi7171/aviation-alpha?style=flat-square)](https://github.com/Aadi7171/aviation-alpha/commits/main)
 
 </div>
 
 ---
 
-## 📌 Overview
+## 🎯 Try It Now
 
-Aviation Alpha transforms public aviation data into actionable trading signals. It explores three complementary alpha sources validated by econometric proof:
+> **No installation needed.** The full dashboard runs live in your browser.
 
-- 🔀 **Route Overlap (M&A Pressure)**: Detects consolidation pressure and competitive overlap between carriers.
-- 💥 **Operational Disruption Spikes**: Identifies leading indicators of financial distress via anomalous cancellation/delay patterns.
-- 🔬 **Granger Causality**: Statistically proves the predictive lead-lag relationship between aviation stress and market volatility.
-- 🛰️ **Live Ingestion**: Real-time signal computation via FlightAware AeroAPI v4 integration.
+| | Link | Description |
+|---|---|---|
+| 🚀 | **[Live Demo →](https://aviation-alpha.streamlit.app)** | Interactive 6-tab Streamlit dashboard with real-time signals |
+| 🌐 | **[Live Website →](https://aviation-alpha.vercel.app)** | Project landing page with methodology overview |
 
 ---
 
-## ✨ Key Features
+## 📌 Overview
 
-- **Live Market Radar**: Real-time airport snapshots and carrier disruption scoring.
-- **Route Overlap Engine**: Calculates pairwise Jaccard similarity across global route networks.
-- **Network Vulnerability Scoring**: Models hub concentration and clustering coefficients using NetworkX.
-- **Backtesting Engine**: Event-driven P&L simulation for signal-based strategies vs. SPY/XAL.
-- **Premium Research Dashboard**: 6-tab interactive workspace built with Plotly and Streamlit.
+**Aviation Alpha** is an end-to-end quantitative research pipeline exploring **alternative data alpha from aviation stress**. It analyses public aviation datasets to generate trading signals around:
+
+- 🔀 **Route Overlap** → consolidation pressure between airlines
+- 💥 **Operational Disruption** → anomalous spikes in cancellations/delays
+- 🔬 **Granger Causality** → econometric validation of signal predictive power
+- 🛰️ **Live Data** → real-time signal via FlightAware AeroAPI v4
+- 📈 **Backtesting** → signal P&L vs SPY and XAL (airline ETF)
+
+---
+
+## 🖥️ Dashboard Preview
+
+> Live at **[aviation-alpha.streamlit.app](https://aviation-alpha.streamlit.app)**
+
+| Tab | What You See |
+|---|---|
+| 📊 Overview | Market disruption index, airline heatmap |
+| 🔀 Route Overlap | Jaccard similarity matrix across carriers |
+| 💥 Disruptions | Z-score spike timeline per airline |
+| 🕸️ Network Graph | Interactive route vulnerability map |
+| 📈 Backtesting | P&L curves vs SPY & XAL with Sharpe ratio |
+| 🛰️ Live Feed | Real-time FlightAware disruption scores |
+
+---
+
+## 🚀 Quick Start
+
+### Option A — Use the Live Demo (Recommended)
+
+👉 **[aviation-alpha.streamlit.app](https://aviation-alpha.streamlit.app)** — nothing to install.
+
+### Option B — Run Locally
+
+**1. Clone & Install**
+```bash
+git clone https://github.com/Aadi7171/aviation-alpha.git
+cd aviation-alpha
+pip install -r requirements.txt
+```
+
+**2. (Optional) Configure FlightAware API**
+```bash
+cp .env.example .env
+# Edit .env and add your key:
+# FLIGHTAWARE_API_KEY=your_key_here
+```
+
+> Free tier: 500 req/month at [flightaware.com/aeroapi](https://www.flightaware.com/aeroapi/)  
+> The pipeline runs fully offline without a key using simulated data.
+
+**3. Launch the Dashboard**
+```bash
+streamlit run src/dashboard/app.py
+```
+
+**4. Run Tests**
+```bash
+python -m pytest tests/ -v
+```
 
 ---
 
@@ -40,20 +100,20 @@ Aviation Alpha transforms public aviation data into actionable trading signals. 
 aviation-alpha/
 ├── src/
 │   ├── ingestion/
-│   │   ├── bts_loader.py       # BTS T-100 segment data (realistic simulation)
+│   │   ├── bts_loader.py       # BTS T-100 data (realistic simulation)
 │   │   ├── openflights.py      # OpenFlights routes & airports (live/cached)
 │   │   └── flightaware.py      # FlightAware AeroAPI v4 client
 │   ├── features/
 │   │   ├── route_overlap.py    # Jaccard similarity, temporal windowing
 │   │   ├── disruption.py       # Rolling z-score spike detection
-│   │   └── network.py          # NetworkX graph metrics & hub vulnerability
+│   │   └── network.py          # NetworkX graph metrics & vulnerability
 │   ├── signals/
 │   │   ├── ma_pressure.py      # Composite M&A pressure score
 │   │   └── volatility.py       # Airline stock volatility via yfinance
 │   ├── econometrics/
 │   │   └── granger.py          # Granger causality tests (statsmodels)
 │   ├── backtesting/
-│   │   └── backtest.py         # Signal → P&L, Sharpe ratio, drawdown
+│   │   └── backtest.py         # Signal → P&L, Sharpe, drawdown
 │   └── dashboard/
 │       └── app.py              # 6-tab Streamlit dashboard
 ├── tests/
@@ -67,61 +127,102 @@ aviation-alpha/
 
 ## 📊 Methodology
 
-### Signal 1 — Route Overlap (M&A Pressure)
+### Signal 1: Route Overlap (M&A Pressure)
+
 ```
 Jaccard(A, B) = |routes_A ∩ routes_B| / |routes_A ∪ routes_B|
 ```
-High Jaccard similarity between two carriers signals route competition, which historically precedes acquisition activity (e.g. AA/US Airways overlap before 2013 merger).
 
-### Signal 2 — Disruption Spikes
+High Jaccard similarity between two carriers signals route competition, which historically precedes acquisition activity (e.g., AA/US Airways overlap before 2013 merger).
+
+### Signal 2: Disruption Spikes
+
 ```
 z = (cancel_rate - rolling_mean) / rolling_std
 spike = |z| > 2.5σ
 ```
-Abnormal cancellation or delay spikes flag operational distress — a leading indicator of financial pressure.
 
-### Signal 3 — Network Vulnerability
-Using **NetworkX** to compute structural fragility:
-- **Low clustering** = no redundant routes = fragile network = M&A target
-- **High hub concentration** = single point of failure = acquisition risk
+Abnormal cancellation or delay spikes may signal operational distress — a leading indicator of financial pressure.
 
-### Econometric Validation (Granger Causality)
+### Signal 3: Network Vulnerability
+
+Using NetworkX to compute betweenness centrality and clustering coefficients:
+
+- **Low clustering** = no redundant routes = fragile carrier
+- **High hub concentration** = single point of failure = M&A target
+
+### Granger Causality
+
 ```python
 from statsmodels.tsa.stattools import grangercausalitytests
-# H₀: Aviation stress does NOT Granger-cause market volatility
-# Reject H₀ if p < 0.05 → Signal has predictive power 
+# H0: X does NOT Granger-cause Y
+# Reject H0 if p < 0.05 → X has predictive power over Y
+```
+
+| Cause | Effect |
+|---|---|
+| Market Disruption Index | Airline Market Volatility |
+| Avg Route Overlap | Market Volatility |
+
+### Composite M&A Pressure Score
+
+```
+score = 0.35 × network_vulnerability
+      + 0.40 × max_route_overlap
+      + 0.25 × disruption_spike_rate
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🛰️ Live API Integration
 
-### 1. Installation
-```bash
-pip install -r requirements.txt
+The `FlightAwareClient` in `src/ingestion/flightaware.py` connects to [AeroAPI v4](https://www.flightaware.com/aeroapi/):
+
+```python
+from src.ingestion.flightaware import FlightAwareClient
+
+client = FlightAwareClient()  # reads FLIGHTAWARE_API_KEY from .env
+
+# Get live disruption scores across major airports
+scores = client.compute_live_disruption_scores()
+
+# Pull departures from a specific airport
+flights = client.get_airport_departures("KATL")
 ```
 
-### 2. Configure Environment (Optional)
-Add your FlightAware key to unlock live departures:
-```env
-FLIGHTAWARE_API_KEY=your_key_here
-```
-
-### 3. Launch the Dashboard
-```bash
-streamlit run src/dashboard/app.py
-```
+Features:
+- ✅ Response caching (TTL: 60 min) — conserves API quota
+- ✅ Rate-limiting with polite delays between requests
+- ✅ Graceful fallback to realistic simulation when no key present
 
 ---
 
-## 📸 Screenshots
+## 🔬 Areas for Future Enhancement
+
+| Area | Enhancement |
+|---|---|
+| **Causality Depth** | Vector Error Correction Models (VECM) for cointegrated series |
+| **Feature Engineering** | Passenger load factor alpha, cargo volume signals |
+| **Signal Coverage** | International routes (Eurocontrol, IATA datasets) |
+| **Live Scalability** | Webhook-based real-time ingestion vs. polling |
+| **Risk Management** | Kelly criterion position sizing in backtest |
+| **ML Layer** | LSTM / Gradient Boosting on feature stack for signal enhancement |
+
+---
+
+## 📚 References
+
+- [BTS T-100 Domestic Segment Data](https://www.transtats.bts.gov/DL_SelectFields.aspx?gnoyr_VQ=FLL)
+- [OpenFlights Route Database](https://openflights.org/data.html)
+- [FlightAware AeroAPI v4 Docs](https://www.flightaware.com/aeroapi/portal/documentation)
+- Granger, C.W.J. (1969). *Investigating Causal Relations by Econometric Models*. Econometrica.
+
+---
 
 <div align="center">
-  <img width="100%" alt="Research Dashboard" src="docs/images/dashboard_overview.png" />
-  <br/>
-  <img width="100%" alt="Route Analysis" src="docs/images/dashboard_overlap.png" />
+
+Built for quantitative research · Python · statsmodels · NetworkX · yfinance · Streamlit · Plotly
+
+**[🚀 Live Demo](https://aviation-alpha.streamlit.app)** · **[🌐 Website](https://aviation-alpha.vercel.app)** · **[⭐ Star on GitHub](https://github.com/Aadi7171/aviation-alpha)**
+
 </div>
-
----
-
-**Developed for Portfolio Showcase** — Highlighting end-to-end quantitative engineering, from raw alternative data ingestion to interactive signal validation and econometric proof.
