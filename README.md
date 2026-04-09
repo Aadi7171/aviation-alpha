@@ -18,6 +18,56 @@
 - **Network Vulnerability Scoring**: Uses NetworkX to model hub concentration and clustering coefficients, scoring carriers on structural fragility.
 - **Live FlightAware Feed**: Integrated with AeroAPI v4 for real-time global flight snapshots with smart response caching.
 
+## 🏗️ Project Structure
+
+```
+aviation-alpha/
+├── src/
+│   ├── ingestion/
+│   │   ├── bts_loader.py       # BTS T-100 data (realistic simulation)
+│   │   ├── openflights.py      # OpenFlights routes & airports (live/cached)
+│   │   └── flightaware.py      # FlightAware AeroAPI v4 client
+│   ├── features/
+│   │   ├── route_overlap.py    # Jaccard similarity, temporal windowing
+│   │   ├── disruption.py       # Rolling z-score spike detection
+│   │   └── network.py          # NetworkX graph metrics & vulnerability
+│   ├── signals/
+│   │   ├── ma_pressure.py      # Composite M&A pressure score
+│   │   └── volatility.py       # Airline stock volatility via yfinance
+│   ├── econometrics/
+│   │   └── granger.py          # Granger causality tests (statsmodels)
+│   ├── backtesting/
+│   │   └── backtest.py         # Signal → P&L, Sharpe, drawdown
+│   └── dashboard/
+│       └── app.py              # 6-tab Streamlit dashboard
+├── tests/
+│   └── test_features.py
+├── requirements.txt
+└── .env.example
+```
+
+## 📊 Methodology
+
+### Signal 1: Route Overlap (M&A Pressure)
+High Jaccard similarity between two carriers signals route competition, which historically precedes acquisition activity.
+```
+Jaccard(A, B) = |routes_A ∩ routes_B| / |routes_A ∪ routes_B|
+```
+
+### Signal 2: Disruption Spikes
+Abnormal cancellation or delay spikes may signal operational distress — a leading indicator of financial pressure.
+```
+z = (cancel_rate - rolling_mean) / rolling_std
+spike = |z| > 2.5σ
+```
+
+### Granger Causality Validation
+Statistical tests to determine if aviation stress signals have predictive power over market volatility.
+| Cause | Effect |
+|---|---|
+| Market Disruption Index | Airline Market Volatility |
+| Avg Route Overlap | Market Volatility |
+
 ## 🛠️ Tech Stack
 
 - **Data Engine**: Python, Pandas, Numpy.
@@ -30,6 +80,8 @@
 
 ### 1. Installation
 ```bash
+git clone https://github.com/Aadi7171/aviation-alpha.git
+cd aviation-alpha
 pip install -r requirements.txt
 ```
 

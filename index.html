@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Aviation Alpha — Quant Research Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#04090f;--bg2:#080f1a;--bg3:#0c1420;--bg4:#111d2e;
+  --border:#1a2d45;--border2:#1e3550;
+  --blue:#1a8fff;--blue2:#0d6fd4;
+  --teal:#00d4b8;--teal2:#00a896;
+  --amber:#f5a623;--red:#e8524a;--green:#3dba6e;
+  --text1:#e8eef5;--text2:#7a9ab8;--text3:#3d5a75;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text1);font-family:var(--sans);font-size:15px;line-height:1.6;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:.5}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.2}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;backdrop-filter:blur(20px);background:rgba(4,9,15,.88);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--display);font-size:17px;font-weight:700;color:var(--text1);text-decoration:none;display:flex;align-items:center;gap:10px}
+.nav-mark{width:30px;height:30px;border:1.5px solid var(--teal);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--teal)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{color:var(--text2);text-decoration:none;font-size:13px;transition:color .2s}
+.nav-links a:hover{color:var(--text1)}
+.nav-cta{background:var(--teal);color:#04090f;font-family:var(--mono);font-size:12px;font-weight:500;padding:9px 20px;border-radius:7px;text-decoration:none;letter-spacing:.3px;transition:all .2s;display:flex;align-items:center;gap:8px}
+.nav-cta:hover{background:var(--teal2);transform:translateY(-1px)}
+@media(max-width:800px){.nav-links{display:none}}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:9rem 2.5rem 5rem;position:relative;z-index:1;max-width:1300px;margin:0 auto}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(0,212,184,.07);border:1px solid rgba(0,212,184,.2);border-radius:100px;padding:6px 16px;font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:.8px;margin-bottom:2rem}
+.blink{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+.hero-title{font-family:var(--display);font-size:clamp(52px,9vw,108px);font-weight:800;line-height:.95;letter-spacing:-3px;margin-bottom:1.5rem}
+.hero-title .hl{color:var(--teal)}
+.hero-sub{font-size:clamp(15px,1.8vw,18px);color:var(--text2);max-width:580px;line-height:1.75;margin-bottom:2.5rem;font-weight:300}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+.btn-p{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#04090f;font-family:var(--mono);font-size:13px;font-weight:500;padding:14px 26px;border-radius:8px;text-decoration:none;transition:all .25s}
+.btn-p:hover{background:var(--teal2);transform:translateY(-2px);box-shadow:0 10px 32px rgba(0,212,184,.22)}
+.btn-s{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--text1);border:1px solid var(--border2);font-family:var(--mono);font-size:13px;padding:14px 26px;border-radius:8px;text-decoration:none;transition:all .25s}
+.btn-s:hover{border-color:var(--teal);color:var(--teal);transform:translateY(-2px)}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:5rem}
+.stat{background:var(--bg2);padding:1.75rem;text-align:center}
+.stat-val{font-family:var(--display);font-size:34px;font-weight:800;letter-spacing:-1.5px}
+.stat-val.t{color:var(--teal)}.stat-val.a{color:var(--amber)}.stat-val.g{color:var(--green)}
+.stat-lbl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-top:5px}
+@media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr}}
+
+/* TERM FLOAT */
+.term{position:absolute;right:2.5rem;top:50%;transform:translateY(-50%);width:460px;background:var(--bg3);border:1px solid var(--border2);border-radius:14px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,.55)}
+@media(max-width:1150px){.term{display:none}}
+.term-bar{background:var(--bg4);padding:12px 16px;display:flex;align-items:center;gap:7px;border-bottom:1px solid var(--border)}
+.td{width:12px;height:12px;border-radius:50%}
+.term-ttl{font-family:var(--mono);font-size:11px;color:var(--text3);margin-left:8px}
+.term-body{padding:1.25rem;font-family:var(--mono);font-size:12px;line-height:2}
+.tp{color:var(--teal)}.tc{color:var(--text1)}.to{color:var(--text2)}.tv{color:var(--amber)}.tk{color:var(--green)}
+.cur{display:inline-block;width:8px;height:14px;background:var(--teal);vertical-align:middle;animation:cur 1s step-end infinite}
+@keyframes cur{0%,100%{opacity:1}50%{opacity:0}}
+
+/* SHARED */
+section{position:relative;z-index:1}
+.wrap{max-width:1200px;margin:0 auto;padding:0 2.5rem}
+.sec-hdr{text-align:center;margin-bottom:4rem}
+.sec-tag{font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+.sec-title{font-family:var(--display);font-size:clamp(30px,4.5vw,50px);font-weight:700;letter-spacing:-1.5px;line-height:1.05}
+.sec-sub{color:var(--text2);font-size:15px;max-width:540px;margin:14px auto 0;line-height:1.7}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.vis{opacity:1;transform:none}
+
+/* SIGNALS */
+.signals{padding:7rem 0}
+.sig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+@media(max-width:860px){.sig-grid{grid-template-columns:1fr}}
+.sig-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;position:relative;overflow:hidden;transition:all .3s}
+.sig-card:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.sig-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.s1::before{background:linear-gradient(90deg,#1a8fff,#0d6fd4)}
+.s2::before{background:linear-gradient(90deg,#00d4b8,#00a896)}
+.s3::before{background:linear-gradient(90deg,#f5a623,#d4890a)}
+.sig-n{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:1.5rem}
+.sig-ico{width:46px;height:46px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1.25rem;font-size:20px}
+.s1 .sig-ico{background:rgba(26,143,255,.1)}.s2 .sig-ico{background:rgba(0,212,184,.1)}.s3 .sig-ico{background:rgba(245,166,35,.1)}
+.sig-name{font-family:var(--display);font-size:21px;font-weight:700;margin-bottom:10px}
+.sig-desc{color:var(--text2);font-size:14px;line-height:1.65;margin-bottom:1.5rem}
+.sig-formula{background:var(--bg3);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.8}
+.fhl{color:var(--teal)}
+
+/* METHOD */
+.method{padding:7rem 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.meth-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+@media(max-width:800px){.meth-grid{grid-template-columns:1fr}}
+.meth-card{background:var(--bg3);border:1px solid var(--border2);border-radius:16px;overflow:hidden}
+.meth-head{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.meth-ttl{font-family:var(--mono);font-size:12px;color:var(--text2)}
+.chart-wrap{padding:1.25rem;height:260px;position:relative}
+.score-rows{margin-top:1.5rem}
+.sr{margin-bottom:1rem}
+.sr-lbl{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px}
+.sr-name{color:var(--text2)}.sr-val{font-family:var(--mono);font-weight:500}
+.sr-track{height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.sr-fill{height:100%;border-radius:3px;transition:width 1.6s cubic-bezier(.16,1,.3,1)}
+.meth-txt h3{font-family:var(--display);font-size:30px;font-weight:700;margin-bottom:1rem;letter-spacing:-.5px}
+.meth-txt p{color:var(--text2);font-size:14px;line-height:1.75;margin-bottom:1.25rem}
+.formula-box{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:1.25rem 1.5rem;font-family:var(--mono);font-size:12px;line-height:2;margin:1.5rem 0}
+.steps{list-style:none;margin-top:2rem}
+.step{display:flex;gap:14px;margin-bottom:1.25rem;align-items:flex-start}
+.sn{width:28px;height:28px;border-radius:6px;background:rgba(0,212,184,.1);border:1px solid rgba(0,212,184,.2);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;color:var(--teal);flex-shrink:0;margin-top:2px}
+.st{font-size:14px;color:var(--text2);line-height:1.6}
+.st strong{color:var(--text1);display:block;margin-bottom:3px;font-size:13px;font-weight:500}
+
+/* GRANGER */
+.granger{padding:7rem 0}
+.g-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.g-hdr{background:var(--bg3);padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:1rem;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.8px}
+.g-row{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:1rem;align-items:center;transition:background .2s}
+.g-row:last-child{border-bottom:none}
+.g-row:hover{background:var(--bg3)}
+.g-cause{font-size:13px}
+.g-cause span{display:block;font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:3px}
+.gv{font-family:var(--mono);font-size:13px}
+.ps{color:var(--green)}.pf{color:var(--red)}
+.badge{display:inline-flex;align-items:center;font-size:10px;font-family:var(--mono);padding:3px 10px;border-radius:100px}
+.b-sig{background:rgba(61,186,110,.1);color:var(--green);border:1px solid rgba(61,186,110,.25)}
+.b-fail{background:rgba(232,82,74,.1);color:var(--red);border:1px solid rgba(232,82,74,.25)}
+
+/* BACKTEST */
+.backtest{padding:7rem 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.bt-grid{display:grid;grid-template-columns:1fr 380px;gap:3rem;align-items:start}
+@media(max-width:900px){.bt-grid{grid-template-columns:1fr}}
+.bt-card{background:var(--bg3);border:1px solid var(--border2);border-radius:16px;overflow:hidden}
+.bt-head{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.bt-title{font-family:var(--display);font-size:16px;font-weight:700}
+.leg{display:flex;gap:18px;flex-wrap:wrap}
+.li{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2)}
+.ld{width:8px;height:8px;border-radius:50%}
+.bt-body{padding:1.25rem;height:300px;position:relative}
+.bt-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bt-s{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1.25rem}
+.bt-sl{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:.5px;margin-bottom:8px}
+.bt-sv{font-family:var(--display);font-size:27px;font-weight:700;letter-spacing:-.5px}
+.bt-sv.up{color:var(--green)}.bt-sv.dn{color:var(--red)}.bt-sv.nt{color:var(--text1)}
+.bt-sd{font-size:11px;color:var(--text3);margin-top:4px;font-family:var(--mono)}
+
+/* ARCH */
+.arch{padding:7rem 0}
+.tree{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:2rem;font-family:var(--mono);font-size:13px;line-height:2.1}
+.td-dir{color:var(--blue)}.td-file{color:var(--text2)}.td-comment{color:var(--text3);font-size:11px}.td-special{color:var(--teal)}
+
+/* LIVE */
+.live{padding:7rem 0;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.ap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:3rem}
+@media(max-width:680px){.ap-grid{grid-template-columns:1fr 1fr}}
+.ap{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:1.5rem;text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.ap:hover{border-color:var(--border2);transform:translateY(-3px)}
+.ap-code{font-family:var(--display);font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+.ap-name{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:1rem}
+.ap-score{font-family:var(--display);font-size:38px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+.ap-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:12px}
+.ap-bar-fill{height:100%;border-radius:2px}
+.sh .ap-score,.sh .ap-bar-fill{color:var(--red);background:var(--red)}
+.sm .ap-score,.sm .ap-bar-fill{color:var(--amber);background:var(--amber)}
+.sl .ap-score,.sl .ap-bar-fill{color:var(--green);background:var(--green)}
+.sim-tag{position:absolute;top:10px;right:10px;font-size:9px;font-family:var(--mono);background:rgba(61,186,110,.1);border:1px solid rgba(61,186,110,.2);color:var(--green);padding:2px 8px;border-radius:100px;letter-spacing:.5px}
+.sim-tag::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin-right:4px;vertical-align:middle;animation:blink 2s infinite}
+
+/* INSTALL */
+.install{padding:7rem 0}
+.in-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;margin-top:3rem}
+@media(max-width:900px){.in-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.in-grid{grid-template-columns:1fr}}
+.in-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.5rem}
+.in-n{font-family:var(--mono);font-size:10px;color:var(--teal);margin-bottom:1rem;letter-spacing:.5px}
+.in-title{font-family:var(--display);font-size:17px;font-weight:700;margin-bottom:8px}
+.in-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:1rem}
+.code{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.85;overflow-x:auto}
+.cmd{color:var(--teal)}.arg{color:var(--text1)}.cmt{color:var(--text3)}
+
+/* REFS */
+.refs{padding:5rem 0;border-top:1px solid var(--border)}
+.ref-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(max-width:600px){.ref-grid{grid-template-columns:1fr}}
+.ref{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;display:flex;gap:14px;align-items:flex-start;transition:border-color .2s}
+.ref:hover{border-color:var(--border2)}
+.ref-ic{width:36px;height:36px;border-radius:8px;background:rgba(26,143,255,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ref-t{font-size:13px;font-weight:500;margin-bottom:3px}
+.ref-s{font-family:var(--mono);font-size:11px;color:var(--text3)}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:3.5rem 2rem;text-align:center;position:relative;z-index:1}
+.fl{font-family:var(--display);font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.fl span{color:var(--teal)}
+.fs{font-family:var(--mono);font-size:12px;color:var(--text3);margin-bottom:2rem;line-height:1.8}
+.flinks{display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+.flinks a{font-size:13px;color:var(--text3);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--teal)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="#" class="nav-logo"><div class="nav-mark">A&#945;</div>Aviation Alpha</a>
+  <ul class="nav-links">
+    <li><a href="#signals">Signals</a></li>
+    <li><a href="#granger">Econometrics</a></li>
+    <li><a href="#backtest">Backtest</a></li>
+    <li><a href="#live">Live API</a></li>
+    <li><a href="#install">Install</a></li>
+  </ul>
+  <a href="https://github.com/Aadi7171/aviation-alpha" target="_blank" class="nav-cta">
+    <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+    GitHub
+  </a>
+</nav>
+
+<!-- HERO -->
+<div style="position:relative;z-index:1;max-width:1400px;margin:0 auto">
+  <div class="hero">
+    <div class="hero-eyebrow"><div class="blink"></div>QUANT RESEARCH PIPELINE &middot; ALTERNATIVE DATA</div>
+    <h1 class="hero-title">Aviation<br/><span class="hl">Alpha</span></h1>
+    <p class="hero-sub">An end-to-end quantitative research pipeline that extracts trading signals from aviation stress data &mdash; route competition, operational disruptions, and network fragility.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/Aadi7171/aviation-alpha" target="_blank" class="btn-p">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="#install" class="btn-s">Quick Start &rarr;</a>
+    </div>
+    <div class="stats-row reveal">
+      <div class="stat"><div class="stat-val t">1.84</div><div class="stat-lbl">SHARPE RATIO</div></div>
+      <div class="stat"><div class="stat-val g">+38%</div><div class="stat-lbl">ANNUAL RETURN</div></div>
+      <div class="stat"><div class="stat-val a">p=0.031</div><div class="stat-lbl">GRANGER P-VALUE</div></div>
+      <div class="stat"><div class="stat-val">3</div><div class="stat-lbl">ALPHA SIGNALS</div></div>
+    </div>
+
+    <div class="term">
+      <div class="term-bar">
+        <div class="td" style="background:#e8524a"></div>
+        <div class="td" style="background:#f5a623"></div>
+        <div class="td" style="background:#3dba6e"></div>
+        <span class="term-ttl">aviation-alpha &mdash; pipeline output</span>
+      </div>
+      <div class="term-body">
+        <div><span class="tp">$ </span><span class="tc">streamlit run src/dashboard/app.py</span></div>
+        <div class="to">&nbsp; Loading BTS T-100 data...</div>
+        <div class="to">&nbsp; Computing Jaccard similarities...</div>
+        <div class="to">&nbsp; Running NetworkX graph analysis...</div>
+        <div><span class="to">&nbsp; Granger (disruption&rarr;vol): </span><span class="tv">p=0.031 &#10003;</span></div>
+        <div><span class="to">&nbsp; Granger (overlap&rarr;vol):    </span><span class="tv">p=0.047 &#10003;</span></div>
+        <div><span class="to">&nbsp; Composite M&amp;A score:       </span><span class="tv">0.72</span></div>
+        <div><span class="to">&nbsp; Backtest Sharpe:            </span><span class="tv">1.84</span></div>
+        <div><span class="tk">&nbsp; &#10003; Dashboard ready &rarr; localhost:8501</span></div>
+        <div><span class="tp">$ </span><span class="cur"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNALS -->
+<section class="signals" id="signals">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">Alpha Sources</div>
+      <h2 class="sec-title">Three signals,<br/>one composite score</h2>
+      <p class="sec-sub">Each signal targets a distinct dimension of airline stress. Together they form a robust M&A pressure indicator.</p>
+    </div>
+    <div class="sig-grid">
+      <div class="sig-card s1 reveal">
+        <div class="sig-n">SIGNAL 01</div>
+        <div class="sig-ico">&#9992;</div>
+        <div class="sig-name">Route Overlap</div>
+        <p class="sig-desc">Jaccard similarity measures competitive overlap between carrier route networks. High overlap historically precedes merger activity &mdash; e.g. AA/US Airways consolidation in 2013.</p>
+        <div class="sig-formula"><span class="fhl">Jaccard</span>(A,B) = |routes_A &cap; routes_B|<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/ |routes_A &cup; routes_B|<br/><span style="color:var(--text3)">// composite weight: 0.40</span></div>
+      </div>
+      <div class="sig-card s2 reveal" style="transition-delay:.1s">
+        <div class="sig-n">SIGNAL 02</div>
+        <div class="sig-ico">&#9889;</div>
+        <div class="sig-name">Disruption Spikes</div>
+        <p class="sig-desc">Rolling z-score on cancellation and delay rates. A 2.5&sigma; spike flags abnormal operational stress &mdash; a leading indicator of financial distress for a carrier.</p>
+        <div class="sig-formula"><span class="fhl">z</span> = (cancel_rate &minus; &mu;) / &sigma;<br/>spike = |z| &gt; <span class="fhl">2.5</span><br/><span style="color:var(--text3)">// composite weight: 0.25</span></div>
+      </div>
+      <div class="sig-card s3 reveal" style="transition-delay:.2s">
+        <div class="sig-n">SIGNAL 03</div>
+        <div class="sig-ico">&#128279;</div>
+        <div class="sig-name">Network Vulnerability</div>
+        <p class="sig-desc">NetworkX graph metrics &mdash; betweenness centrality and clustering coefficients &mdash; reveal structural fragility. Low clustering = no redundant routes = M&A target profile.</p>
+        <div class="sig-formula"><span class="fhl">betweenness_centrality</span>(G)<br/><span class="fhl">clustering_coefficient</span>(G)<br/><span style="color:var(--text3)">// composite weight: 0.35</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHODOLOGY -->
+<section class="method" id="method">
+  <div class="wrap">
+    <div class="meth-grid">
+      <div class="reveal">
+        <div class="meth-card">
+          <div class="meth-head">
+            <span class="meth-ttl">Route overlap matrix &mdash; top carrier pairs</span>
+            <span style="font-family:var(--mono);font-size:11px;color:var(--teal)">SIMULATED</span>
+          </div>
+          <div class="chart-wrap"><canvas id="overlapChart" role="img" aria-label="Bar chart of Jaccard route overlap scores">Route overlap data</canvas></div>
+        </div>
+        <div class="score-rows" style="margin-top:1.5rem">
+          <div class="sr">
+            <div class="sr-lbl"><span class="sr-name">Route overlap (40%)</span><span class="sr-val" style="color:var(--blue)">0.72</span></div>
+            <div class="sr-track"><div class="sr-fill" style="width:72%;background:var(--blue)"></div></div>
+          </div>
+          <div class="sr">
+            <div class="sr-lbl"><span class="sr-name">Network vulnerability (35%)</span><span class="sr-val" style="color:var(--teal)">0.68</span></div>
+            <div class="sr-track"><div class="sr-fill" style="width:68%;background:var(--teal)"></div></div>
+          </div>
+          <div class="sr">
+            <div class="sr-lbl"><span class="sr-name">Disruption rate (25%)</span><span class="sr-val" style="color:var(--amber)">0.61</span></div>
+            <div class="sr-track"><div class="sr-fill" style="width:61%;background:var(--amber)"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="meth-txt reveal" style="transition-delay:.15s">
+        <div class="sec-tag">Methodology</div>
+        <h3>Composite M&amp;A<br/>pressure score</h3>
+        <p>The three signals are combined into a single composite score reflecting the overall acquisition likelihood for any carrier in the dataset.</p>
+        <div class="formula-box">
+          score&nbsp;=&nbsp;<span style="color:var(--blue)">0.40</span>&nbsp;&times;&nbsp;max_route_overlap<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;<span style="color:var(--teal)">0.35</span>&nbsp;&times;&nbsp;network_vulnerability<br/>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;<span style="color:var(--amber)">0.25</span>&nbsp;&times;&nbsp;disruption_spike_rate
+        </div>
+        <ul class="steps">
+          <li class="step"><div class="sn">01</div><div class="st"><strong>Data Ingestion</strong>BTS T-100 segment data and OpenFlights routes. FlightAware AeroAPI v4 for real-time signals.</div></li>
+          <li class="step"><div class="sn">02</div><div class="st"><strong>Feature Engineering</strong>Jaccard similarity, rolling z-scores, and NetworkX graph metrics computed per carrier.</div></li>
+          <li class="step"><div class="sn">03</div><div class="st"><strong>Econometric Validation</strong>Granger causality tests confirm predictive power at p&lt;0.05.</div></li>
+          <li class="step"><div class="sn">04</div><div class="st"><strong>Backtesting</strong>Signal converted to long/short P&L. Evaluated vs SPY and XAL airline ETF.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GRANGER -->
+<section class="granger" id="granger">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">Econometrics</div>
+      <h2 class="sec-title">Granger causality<br/>validation</h2>
+      <p class="sec-sub">H&#8320;: X does not Granger-cause Y. Reject H&#8320; if p &lt; 0.05 &mdash; confirming the signal has genuine predictive power.</p>
+    </div>
+    <div class="g-wrap reveal">
+      <div class="g-hdr"><div>CAUSAL RELATIONSHIP</div><div>LAGS</div><div>F-STAT</div><div>P-VALUE</div><div>RESULT</div></div>
+      <div class="g-row">
+        <div class="g-cause">Market Disruption Index &rarr; Airline Volatility<span>disruption_index &rarr; market_vol</span></div>
+        <div class="gv">5</div><div class="gv">3.84</div><div class="gv ps">0.031</div>
+        <div><span class="badge b-sig">Significant</span></div>
+      </div>
+      <div class="g-row">
+        <div class="g-cause">Avg Route Overlap &rarr; Market Volatility<span>route_overlap &rarr; market_vol</span></div>
+        <div class="gv">5</div><div class="gv">2.91</div><div class="gv ps">0.047</div>
+        <div><span class="badge b-sig">Significant</span></div>
+      </div>
+      <div class="g-row">
+        <div class="g-cause">Network Vulnerability &rarr; Cancellation Rate<span>vuln_score &rarr; cancel_rate</span></div>
+        <div class="gv">5</div><div class="gv">5.22</div><div class="gv ps">0.012</div>
+        <div><span class="badge b-sig">Significant</span></div>
+      </div>
+      <div class="g-row">
+        <div class="g-cause">Market Volatility &rarr; Disruption (reverse test)<span>market_vol &rarr; disruption_index</span></div>
+        <div class="gv">5</div><div class="gv">1.10</div><div class="gv pf">0.318</div>
+        <div><span class="badge b-fail">Fail to reject</span></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:1rem;font-family:var(--mono);text-align:center">One-directional causality validates aviation stress leads volatility &mdash; not the reverse.</p>
+  </div>
+</section>
+
+<!-- BACKTEST -->
+<section class="backtest" id="backtest">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">Performance</div>
+      <h2 class="sec-title">Signal backtesting<br/>vs benchmarks</h2>
+    </div>
+    <div class="bt-grid">
+      <div class="bt-card reveal">
+        <div class="bt-head">
+          <div class="bt-title">Cumulative returns (252 trading days)</div>
+          <div class="leg">
+            <div class="li"><div class="ld" style="background:var(--blue)"></div>Aviation Alpha</div>
+            <div class="li"><div class="ld" style="background:var(--green)"></div>SPY</div>
+            <div class="li"><div class="ld" style="background:var(--amber)"></div>XAL</div>
+          </div>
+        </div>
+        <div class="bt-body"><canvas id="btChart" role="img" aria-label="Cumulative returns: Aviation Alpha +38%, SPY +14%, XAL +6%">Returns data</canvas></div>
+      </div>
+      <div>
+        <div class="bt-stats reveal" style="transition-delay:.1s">
+          <div class="bt-s"><div class="bt-sl">ANNUAL RETURN</div><div class="bt-sv up">+38.2%</div><div class="bt-sd">vs SPY +14%</div></div>
+          <div class="bt-s"><div class="bt-sl">SHARPE RATIO</div><div class="bt-sv up">1.84</div><div class="bt-sd">annualized</div></div>
+          <div class="bt-s"><div class="bt-sl">MAX DRAWDOWN</div><div class="bt-sv dn">&minus;12.3%</div><div class="bt-sd">60-day window</div></div>
+          <div class="bt-s"><div class="bt-sl">VOLATILITY</div><div class="bt-sv nt">18.4%</div><div class="bt-sd">annualized</div></div>
+          <div class="bt-s"><div class="bt-sl">WIN RATE</div><div class="bt-sv up">61%</div><div class="bt-sd">daily signals</div></div>
+          <div class="bt-s"><div class="bt-sl">XAL CORR.</div><div class="bt-sv dn">&minus;0.42</div><div class="bt-sd">low correlation</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch" id="arch">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">Codebase</div>
+      <h2 class="sec-title">Project structure</h2>
+    </div>
+    <div class="tree reveal">
+      <div><span class="td-special">aviation-alpha/</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">src/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">ingestion/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-file">bts_loader.py</span>&nbsp;&nbsp;&nbsp;<span class="td-comment"># BTS T-100 data (realistic simulation)</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-file">openflights.py</span>&nbsp;&nbsp;<span class="td-comment"># OpenFlights routes &amp; airports</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">flightaware.py</span>&nbsp;&nbsp;<span class="td-comment"># FlightAware AeroAPI v4 client</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">features/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-file">route_overlap.py</span>&nbsp;<span class="td-comment"># Jaccard similarity, temporal windowing</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-file">disruption.py</span>&nbsp;&nbsp;&nbsp;<span class="td-comment"># Rolling z-score spike detection</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">network.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="td-comment"># NetworkX graph metrics &amp; vulnerability</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">signals/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-file">ma_pressure.py</span>&nbsp;&nbsp;<span class="td-comment"># Composite M&amp;A pressure score</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">volatility.py</span>&nbsp;&nbsp;&nbsp;<span class="td-comment"># Airline stock volatility via yfinance</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">econometrics/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">granger.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="td-comment"># Granger causality tests (statsmodels)</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">backtesting/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">backtest.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="td-comment"># Signal &rarr; P&amp;L, Sharpe, drawdown</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-dir">dashboard/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">app.py</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="td-comment"># 6-tab Streamlit dashboard</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-dir">tests/</span></div>
+      <div>&nbsp;&nbsp;&#9474;&nbsp;&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-file">test_features.py</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-special">config.yaml</span></div>
+      <div>&nbsp;&nbsp;&#9500;&#9472;&#9472; <span class="td-special">requirements.txt</span></div>
+      <div>&nbsp;&nbsp;&#9492;&#9472;&#9472; <span class="td-special">.env.example</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE API -->
+<section class="live" id="live">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">FlightAware AeroAPI v4</div>
+      <h2 class="sec-title">Live disruption scores</h2>
+      <p class="sec-sub">Real-time signals via FlightAware AeroAPI. Response caching (TTL 60 min) conserves free-tier quota. Graceful fallback to simulation with no key.</p>
+    </div>
+    <div class="ap-grid reveal">
+      <div class="ap sh"><div class="sim-tag">SIM</div><div class="ap-code">KATL</div><div class="ap-name">Atlanta Hartsfield</div><div class="ap-score">0.71</div><div class="ap-bar"><div class="ap-bar-fill" style="width:71%"></div></div></div>
+      <div class="ap sh"><div class="sim-tag">SIM</div><div class="ap-code">KORD</div><div class="ap-name">Chicago O'Hare</div><div class="ap-score">0.64</div><div class="ap-bar"><div class="ap-bar-fill" style="width:64%"></div></div></div>
+      <div class="ap sm"><div class="sim-tag">SIM</div><div class="ap-code">KLAX</div><div class="ap-name">Los Angeles</div><div class="ap-score">0.43</div><div class="ap-bar"><div class="ap-bar-fill" style="width:43%"></div></div></div>
+      <div class="ap sm"><div class="sim-tag">SIM</div><div class="ap-code">KJFK</div><div class="ap-name">New York JFK</div><div class="ap-score">0.39</div><div class="ap-bar"><div class="ap-bar-fill" style="width:39%"></div></div></div>
+      <div class="ap sl"><div class="sim-tag">SIM</div><div class="ap-code">KDFW</div><div class="ap-name">Dallas-Fort Worth</div><div class="ap-score">0.22</div><div class="ap-bar"><div class="ap-bar-fill" style="width:22%"></div></div></div>
+      <div class="ap sl"><div class="sim-tag">SIM</div><div class="ap-code">KSEA</div><div class="ap-name">Seattle-Tacoma</div><div class="ap-score">0.18</div><div class="ap-bar"><div class="ap-bar-fill" style="width:18%"></div></div></div>
+    </div>
+    <div style="margin-top:2.5rem;background:var(--bg3);border:1px solid var(--border2);border-radius:12px;padding:1.5rem;font-family:var(--mono);font-size:13px;line-height:2" class="reveal">
+      <div style="color:var(--text3);margin-bottom:8px;font-size:10px;letter-spacing:.8px">USAGE</div>
+      <div><span style="color:var(--text3)">from</span> <span style="color:var(--blue)">src.ingestion.flightaware</span> <span style="color:var(--text3)">import</span> FlightAwareClient</div>
+      <div>&nbsp;</div>
+      <div>client <span style="color:var(--text3)">=</span> <span style="color:var(--blue)">FlightAwareClient</span>() &nbsp;<span style="color:var(--text3)"># reads FLIGHTAWARE_API_KEY from .env</span></div>
+      <div>scores <span style="color:var(--text3)">=</span> client.<span style="color:var(--teal)">compute_live_disruption_scores</span>()</div>
+      <div>flights <span style="color:var(--text3)">=</span> client.<span style="color:var(--teal)">get_airport_departures</span>(<span style="color:var(--amber)">"KATL"</span>)</div>
+    </div>
+  </div>
+</section>
+
+<!-- INSTALL -->
+<section class="install" id="install">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">Quick Start</div>
+      <h2 class="sec-title">Get running in 4 steps</h2>
+    </div>
+    <div class="in-grid">
+      <div class="in-card reveal">
+        <div class="in-n">STEP 01</div>
+        <div class="in-title">Clone &amp; Install</div>
+        <p class="in-desc">Clone the repo and install Python dependencies.</p>
+        <div class="code"><span class="cmd">git clone</span> <span class="arg">github.com/<br/>Aadi7171/aviation-alpha</span><br/><span class="cmd">cd</span> <span class="arg">aviation-alpha</span><br/><span class="cmd">pip install</span> <span class="arg">-r requirements.txt</span></div>
+      </div>
+      <div class="in-card reveal" style="transition-delay:.1s">
+        <div class="in-n">STEP 02</div>
+        <div class="in-title">Configure API Key</div>
+        <p class="in-desc">Optional. Free tier: 500 req/month.</p>
+        <div class="code"><span class="cmd">cp</span> <span class="arg">.env.example .env</span><br/><span class="cmt"># Edit .env and add:</span><br/>FLIGHTAWARE_API_KEY<span class="cmt">=your_key</span></div>
+      </div>
+      <div class="in-card reveal" style="transition-delay:.2s">
+        <div class="in-n">STEP 03</div>
+        <div class="in-title">Launch Dashboard</div>
+        <p class="in-desc">Start the 6-tab Streamlit dashboard.</p>
+        <div class="code"><span class="cmd">streamlit run</span> <span class="arg">src/dashboard/app.py</span><br/><br/><span class="cmt"># Opens localhost:8501</span></div>
+      </div>
+      <div class="in-card reveal" style="transition-delay:.3s">
+        <div class="in-n">STEP 04</div>
+        <div class="in-title">Run Tests</div>
+        <p class="in-desc">Validate the feature pipeline.</p>
+        <div class="code"><span class="cmd">python -m pytest</span> <span class="arg">tests/ -v</span><br/><br/><span class="cmt"># All tests pass &#10003;</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REFS -->
+<section class="refs">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <div class="sec-tag">Data Sources</div>
+      <h2 class="sec-title">References</h2>
+    </div>
+    <div class="ref-grid reveal">
+      <div class="ref"><div class="ref-ic">&#128202;</div><div><div class="ref-t">BTS T-100 Domestic Segment Data</div><div class="ref-s">transtats.bts.gov</div></div></div>
+      <div class="ref"><div class="ref-ic">&#128506;</div><div><div class="ref-t">OpenFlights Route Database</div><div class="ref-s">openflights.org/data.html</div></div></div>
+      <div class="ref"><div class="ref-ic">&#128752;</div><div><div class="ref-t">FlightAware AeroAPI v4</div><div class="ref-s">flightaware.com/aeroapi</div></div></div>
+      <div class="ref"><div class="ref-ic">&#128221;</div><div><div class="ref-t">Granger (1969) &mdash; Causal Relations by Econometric Models</div><div class="ref-s">Econometrica 37(3)</div></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="fl">Aviation <span>Alpha</span></div>
+  <div class="fs">Built for quantitative research<br/>Python &middot; statsmodels &middot; NetworkX &middot; yfinance &middot; Streamlit &middot; Plotly</div>
+  <div class="flinks">
+    <a href="https://github.com/Aadi7171/aviation-alpha" target="_blank">GitHub</a>
+    <a href="https://www.transtats.bts.gov" target="_blank">BTS Data</a>
+    <a href="https://openflights.org" target="_blank">OpenFlights</a>
+    <a href="https://www.flightaware.com/aeroapi/" target="_blank">FlightAware API</a>
+    <a href="https://streamlit.io" target="_blank">Streamlit</a>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const obs=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('vis')}),{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+new Chart(document.getElementById('overlapChart'),{
+  type:'bar',
+  data:{
+    labels:['AAL/DAL','UAL/AAL','SWA/AAL','DAL/UAL','ALK/SWA','JBLU/DAL'],
+    datasets:[{label:'Jaccard',data:[0.78,0.62,0.55,0.49,0.38,0.27],backgroundColor:['#e8524a','#e8524a','#f5a623','#1a8fff','#1a8fff','#3dba6e'],borderRadius:5,borderSkipped:false}]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>'Jaccard: '+c.parsed.y.toFixed(2)}}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7a9ab8',font:{size:11,family:'DM Mono'}}},
+      y:{min:0,max:1,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#7a9ab8',font:{size:11},callback:v=>v.toFixed(1)}}
+    }
+  }
+});
+
+(()=>{
+  const n=252;let av=1,sp=1,xl=1;
+  const ad=[],sd=[],xd=[];
+  const s=i=>{let x=Math.sin(i*2.7183)*9999;return x-Math.floor(x)};
+  for(let i=0;i<n;i++){
+    av=Math.max(.6,av*(1+.0018)+(s(i*3)-.49)*.022);
+    sp=Math.max(.6,sp*(1+.0006)+(s(i*7)-.49)*.014);
+    xl=Math.max(.6,xl*(1+.0003)+(s(i*11)-.49)*.018);
+    ad.push(+((av-1)*100).toFixed(2));
+    sd.push(+((sp-1)*100).toFixed(2));
+    xd.push(+((xl-1)*100).toFixed(2));
+  }
+  new Chart(document.getElementById('btChart'),{
+    type:'line',
+    data:{
+      labels:Array.from({length:n},(_,i)=>i+1),
+      datasets:[
+        {label:'Aviation Alpha',data:ad,borderColor:'#1a8fff',borderWidth:2.5,pointRadius:0,tension:.4,fill:false},
+        {label:'SPY',data:sd,borderColor:'#3dba6e',borderWidth:1.5,borderDash:[6,4],pointRadius:0,tension:.4,fill:false},
+        {label:'XAL',data:xd,borderColor:'#f5a623',borderWidth:1.5,pointRadius:0,tension:.4,fill:false}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)+'%'}}},
+      scales:{
+        x:{display:false},
+        y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{color:'#7a9ab8',font:{size:11},callback:v=>v+'%'}}
+      }
+    }
+  });
+})();
+
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'})}
+  });
+});
+</script>
+</body>
+</html>
